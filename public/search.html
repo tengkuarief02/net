@@ -5,24 +5,23 @@
 <title>Search</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
-<body style="background:#000;color:#fff">
+<body style="background:#000;color:#fff;font-family:sans-serif">
 
 <input id="q" placeholder="Cari drama">
-<button onclick="search()">Cari</button>
-
+<button onclick="go()">Cari</button>
 <div id="res"></div>
 
 <script>
-function search(){
- fetch(window.location.origin + '/api/search?q='+encodeURIComponent(q.value))
+function go(){
+ fetch(location.origin+'/api/search?q='+encodeURIComponent(q.value))
  .then(r=>r.json())
  .then(j=>{
    res.innerHTML='';
-   j.data.forEach(d=>{
+   (j.data||j.result||[]).forEach(d=>{
      res.innerHTML+=`
-      <a href="episodes.html?id=${d.shortPlayId}">
-        <img src="${d.cover}" width="120"><br>${d.title}
-      </a><hr>`;
+       <a href="episodes.html?id=${d.shortPlayId}">
+         <img src="${d.cover}" width="120"><br>${d.title}
+       </a><hr>`;
    });
  });
 }
