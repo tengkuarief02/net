@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NetShort Streaming</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{background:#000;color:#fff;font-family:sans-serif}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.card img{width:100%;border-radius:6px}
+a{text-decoration:none;color:#fff}
+</style>
+</head>
+<body>
+
+<h2>Theaters</h2>
+<div class="grid" id="theaters"></div>
+
+<h2>For You</h2>
+<div class="grid" id="foryou"></div>
+
+<script>
+fetch('/api/theaters').then(r=>r.json()).then(j=>{
+  j.data.forEach(d=>{
+    theaters.innerHTML+=`
+      <a class="card" href="episodes.html?id=${d.shortPlayId}">
+        <img src="${d.cover}">
+        <div>${d.title}</div>
+      </a>`;
+  });
+});
+
+fetch('/api/foryou').then(r=>r.json()).then(j=>{
+  j.data.forEach(d=>{
+    foryou.innerHTML+=`
+      <a class="card" href="episodes.html?id=${d.shortPlayId}">
+        <img src="${d.cover}">
+        <div>${d.title}</div>
+      </a>`;
+  });
+});
+</script>
+
+</body>
+</html>
