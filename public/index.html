@@ -20,25 +20,37 @@ a{text-decoration:none;color:#fff}
 <div class="grid" id="foryou"></div>
 
 <script>
-fetch(window.location.origin + '/api/theaters').then(r=>r.json()).then(j=>{
-  j.data.forEach(d=>{
-    theaters.innerHTML+=`
-      <a class="card" href="episodes.html?id=${d.shortPlayId}">
-        <img src="${d.cover}">
-        <div>${d.title}</div>
-      </a>`;
-  });
-});
+const base = window.location.origin;
 
-fetch(window.location.origin + '/api/foryou').then(r=>r.json()).then(j=>{
-  j.data.forEach(d=>{
-    foryou.innerHTML+=`
+// THEATERS
+fetch(base + '/api/theaters')
+.then(r=>r.json())
+.then(j=>{
+  const list = j.data || j.result || [];
+  list.forEach(d=>{
+    theaters.innerHTML += `
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
         <img src="${d.cover}">
         <div>${d.title}</div>
       </a>`;
   });
-});
+})
+.catch(e=>console.error('Theaters error', e));
+
+// FOR YOU
+fetch(base + '/api/foryou')
+.then(r=>r.json())
+.then(j=>{
+  const list = j.data || j.result || [];
+  list.forEach(d=>{
+    foryou.innerHTML += `
+      <a class="card" href="episodes.html?id=${d.shortPlayId}">
+        <img src="${d.cover}">
+        <div>${d.title}</div>
+      </a>`;
+  });
+})
+.catch(e=>console.error('ForYou error', e));
 </script>
 
 </body>
