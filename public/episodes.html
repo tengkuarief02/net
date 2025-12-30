@@ -13,7 +13,7 @@
 <script>
 const id = new URLSearchParams(location.search).get('id');
 
-fetch(window.location.origin + /api/episodes?id='+id)
+fetch(window.location.origin + '/api/episodes?id='+id)
 .then(r=>r.json())
 .then(j=>{
   j.data.forEach(ep=>{
