@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Search</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="background:#000;color:#fff">
+
+<input id="q" placeholder="Cari drama">
+<button onclick="search()">Cari</button>
+
+<div id="res"></div>
+
+<script>
+function search(){
+ fetch('/api/search?q='+encodeURIComponent(q.value))
+ .then(r=>r.json())
+ .then(j=>{
+   res.innerHTML='';
+   j.data.forEach(d=>{
+     res.innerHTML+=`
+      <a href="episodes.html?id=${d.shortPlayId}">
+        <img src="${d.cover}" width="120"><br>${d.title}
+      </a><hr>`;
+   });
+ });
+}
+</script>
+
+</body>
+</html>
