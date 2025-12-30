@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Episodes</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body style="background:#000;color:#fff">
+
+<video id="player" controls autoplay style="width:100%"></video>
+<div id="list"></div>
+
+<script>
+const id = new URLSearchParams(location.search).get('id');
+
+fetch('/api/episodes?id='+id)
+.then(r=>r.json())
+.then(j=>{
+  j.data.forEach(ep=>{
+    list.innerHTML+=`
+      <button onclick="play('${ep.playUrl}')">
+        Episode ${ep.episode}
+      </button><br>`;
+  });
+});
+
+function play(url){
+ player.src = url;
+ player.play();
+}
+</script>
+
+</body>
+</html>
