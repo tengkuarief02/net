@@ -5,18 +5,18 @@
 <title>Episodes</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
-<body style="background:#000;color:#fff">
+<body style="background:#000;color:#fff;font-family:sans-serif">
 
-<video id="player" controls autoplay style="width:100%"></video>
+<video id="player" controls autoplay style="width:100%;max-height:80vh"></video>
 <div id="list"></div>
 
 <script>
 const id = new URLSearchParams(location.search).get('id');
 
-fetch(window.location.origin + '/api/episodes?id='+id)
+fetch(location.origin+'/api/episodes?id='+id)
 .then(r=>r.json())
 .then(j=>{
-  j.data.forEach(ep=>{
+  (j.data||j.result||[]).forEach(ep=>{
     list.innerHTML+=`
       <button onclick="play('${ep.playUrl}')">
         Episode ${ep.episode}
@@ -25,8 +25,8 @@ fetch(window.location.origin + '/api/episodes?id='+id)
 });
 
 function play(url){
- player.src = url;
- player.play();
+  player.src = url;
+  player.play();
 }
 </script>
 
