@@ -1,6 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NetShort Streaming</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+h2{padding:12px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:12px}
+.card{display:block}
+.card img{width:100%;height:210px;object-fit:cover;border-radius:6px;background:#111}
+a{text-decoration:none;color:#fff}
+</style>
+</head>
+<body>
+
+<h2>Theaters</h2>
+<div class="grid" id="theaters"></div>
+
+<h2>For You</h2>
+<div class="grid" id="foryou"></div>
+
 <script>
 const base = location.origin;
 
+/**
+ * 🔥 EXTRACT LIST PALING AMAN
+ */
+function extractList(j){
+  if (Array.isArray(j)) return j;
+  if (Array.isArray(j.data)) return j.data;
+  if (j.data && Array.isArray(j.data.list)) return j.data.list;
+  if (j.result && Array.isArray(j.result)) return j.result;
+  if (j.result && Array.isArray(j.result.list)) return j.result.list;
+  return [];
+}
+
+/**
+ * 🔥 EXTRACT IMAGE PALING AMAN
+ */
 function getImage(d){
   let img =
     d.cover ||
@@ -10,9 +48,10 @@ function getImage(d){
     d.thumbnail ||
     '';
 
-  if (!img) return 'https://via.placeholder.com/300x450?text=No+Image';
+  if (!img) {
+    return 'https://via.placeholder.com/300x450?text=No+Image';
+  }
 
-  // paksa https
   if (img.startsWith('http://')) {
     img = img.replace('http://', 'https://');
   }
@@ -22,12 +61,14 @@ function getImage(d){
 
 function render(el, list){
   el.innerHTML = '';
-  if (!list || !list.length){
+  if (!list.length){
     el.innerHTML = '<div>Tidak ada data</div>';
     return;
   }
 
   list.forEach(d=>{
+    if (!d.shortPlayId) return;
+
     el.innerHTML += `
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
         <img src="${getImage(d)}" loading="lazy">
@@ -37,13 +78,32 @@ function render(el, list){
   });
 }
 
+// ===== LOAD THEATERS =====
 fetch(base + '/api/theaters')
-.then(r=>r.json())
-.then(j=>render(theaters, j.data || j.result))
-.catch(()=>theaters.innerHTML='Error load theaters');
+  .then(r=>r.json())
+  .then(j=>{
+    const list = extractList(j);
+    console.log('THEATERS:', list); // 🔴 CEK DI CONSOLE
+    render(theaters, list);
+  })
+  .catch(e=>{
+    console.error(e);
+    theaters.innerHTML = 'Gagal load theaters';
+  });
 
+// ===== LOAD FOR YOU =====
 fetch(base + '/api/foryou')
-.then(r=>r.json())
-.then(j=>render(foryou, j.data || j.result))
-.catch(()=>foryou.innerHTML='Error load for you');
+  .then(r=>r.json())
+  .then(j=>{
+    const list = extractList(j);
+    console.log('FORYOU:', list); // 🔴 CEK DI CONSOLE
+    render(foryou, list);
+  })
+  .catch(e=>{
+    console.error(e);
+    foryou.innerHTML = 'Gagal load for you';
+  });
 </script>
+
+</body>
+</html>
