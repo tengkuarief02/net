@@ -3,31 +3,60 @@
 <head>
 <meta charset="utf-8">
 <title>Episodes</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+video{width:100%;max-height:70vh}
+button{width:100%;padding:12px;background:#111;color:#fff;border:0;border-bottom:1px solid #222}
+</style>
 </head>
-<body style="background:#000;color:#fff;font-family:sans-serif">
+<body>
 
-<video id="player" controls autoplay style="width:100%;max-height:80vh"></video>
+<video id="player" controls></video>
 <div id="list"></div>
 
 <script>
 const id = new URLSearchParams(location.search).get('id');
-
-fetch(location.origin+'/api/episodes?id='+id)
-.then(r=>r.json())
-.then(j=>{
-  (j.data||j.result||[]).forEach(ep=>{
-    list.innerHTML+=`
-      <button onclick="play('${ep.playUrl}')">
-        Episode ${ep.episode}
-      </button><br>`;
-  });
-});
+const player = document.getElementById('player');
+let hls;
 
 function play(url){
-  player.src = url;
-  player.play();
+  if (hls){ hls.destroy(); hls=null; }
+
+  if (url.includes('.m3u8') && Hls.isSupported()){
+    hls = new Hls();
+    hls.loadSource(url);
+    hls.attachMedia(player);
+    hls.on(Hls.Events.MANIFEST_PARSED,()=>player.play());
+  } else {
+    player.src = url;
+    player.play();
+  }
 }
+
+fetch('/api/episodes?id='+id)
+.then(r=>r.json())
+.then(j=>{
+  const list =
+    (j.data && j.data.list) ||
+    j.data ||
+    (j.result && j.result.list) ||
+    j.result ||
+    [];
+
+  list.forEach(ep=>{
+    listDiv.innerHTML += `
+      <button onclick="play('${ep.playUrl}')">
+        ▶ Episode ${ep.episode}
+      </button>
+    `;
+  });
+
+  if (list[0]) play(list[0].playUrl);
+});
+
+const listDiv = document.getElementById('list');
 </script>
 
 </body>
