@@ -1,72 +1,64 @@
-<script>
-const base = location.origin;
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NetShort</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+h2{margin:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:12px}
+.card img{width:100%;height:210px;object-fit:cover;border-radius:6px;background:#111}
+a{color:#fff;text-decoration:none}
+</style>
+</head>
+<body>
 
-/**
- * AMBIL ARRAY DENGAN AMAN
- */
-function getList(j){
+<h2>Theaters</h2>
+<div id="theaters" class="grid"></div>
+
+<h2>For You</h2>
+<div id="foryou" class="grid"></div>
+
+<script>
+function extractList(j){
   if (!j) return [];
   if (Array.isArray(j)) return j;
-  if (Array.isArray(j.data)) return j.data;
   if (j.data && Array.isArray(j.data.list)) return j.data.list;
-  if (Array.isArray(j.result)) return j.result;
+  if (Array.isArray(j.data)) return j.data;
   if (j.result && Array.isArray(j.result.list)) return j.result.list;
+  if (Array.isArray(j.result)) return j.result;
   return [];
 }
 
-/**
- * AMBIL GAMBAR DENGAN AMAN
- */
-function getImage(d){
-  if (!d) return 'https://via.placeholder.com/300x450?text=No+Image';
-  let img =
-    d.cover ||
-    d.coverImage ||
-    d.poster ||
-    d.image ||
-    d.thumbnail ||
-    '';
-
+function getImg(d){
+  let img = d.cover || d.poster || d.image || d.thumbnail || '';
   if (!img) return 'https://via.placeholder.com/300x450?text=No+Image';
-  if (img.startsWith('http://')) img = img.replace('http://', 'https://');
+  if (img.startsWith('http://')) img = img.replace('http://','https://');
   return img;
 }
 
 function render(el, list){
   el.innerHTML = '';
-  if (!Array.isArray(list) || list.length === 0){
-    el.innerHTML = '<div>Tidak ada data</div>';
-    return;
-  }
-
   list.forEach(d=>{
     if (!d.shortPlayId) return;
     el.innerHTML += `
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
-        <img src="${getImage(d)}">
+        <img src="${getImg(d)}">
         <div>${d.title || 'Untitled'}</div>
       </a>
     `;
   });
 }
 
-// THEATERS
-fetch(base + '/api/theaters')
+fetch('/api/theaters')
 .then(r=>r.json())
-.then(j=>{
-  const list = getList(j);
-  console.log('THEATERS LIST:', list);
-  render(document.getElementById('theaters'), list);
-})
-.catch(e=>console.error(e));
+.then(j=>render(theaters, extractList(j)));
 
-// FOR YOU
-fetch(base + '/api/foryou')
+fetch('/api/foryou')
 .then(r=>r.json())
-.then(j=>{
-  const list = getList(j);
-  console.log('FORYOU LIST:', list);
-  render(document.getElementById('foryou'), list);
-})
-.catch(e=>console.error(e));
+.then(j=>render(foryou, extractList(j)));
 </script>
+
+</body>
+</html>
