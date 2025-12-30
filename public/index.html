@@ -1,39 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>NetShort Streaming</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:12px}
-.card img{width:100%;border-radius:6px}
-a{text-decoration:none;color:#fff}
-h2{padding:12px;margin:0}
-</style>
-</head>
-<body>
-
-<h2>Theaters</h2>
-<div class="grid" id="theaters"></div>
-
-<h2>For You</h2>
-<div class="grid" id="foryou"></div>
-
 <script>
 const base = location.origin;
 
+function getImage(d){
+  let img =
+    d.cover ||
+    d.coverImage ||
+    d.poster ||
+    d.image ||
+    d.thumbnail ||
+    '';
+
+  if (!img) return 'https://via.placeholder.com/300x450?text=No+Image';
+
+  // paksa https
+  if (img.startsWith('http://')) {
+    img = img.replace('http://', 'https://');
+  }
+
+  return img;
+}
+
 function render(el, list){
-  if(!list || !list.length){
+  el.innerHTML = '';
+  if (!list || !list.length){
     el.innerHTML = '<div>Tidak ada data</div>';
     return;
   }
+
   list.forEach(d=>{
     el.innerHTML += `
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
-        <img src="${d.cover}">
-        <div>${d.title}</div>
-      </a>`;
+        <img src="${getImage(d)}" loading="lazy">
+        <div>${d.title || 'Untitled'}</div>
+      </a>
+    `;
   });
 }
 
@@ -45,8 +45,5 @@ fetch(base + '/api/theaters')
 fetch(base + '/api/foryou')
 .then(r=>r.json())
 .then(j=>render(foryou, j.data || j.result))
-.catch(()=>foryou.innerHTML='Error load foryou');
+.catch(()=>foryou.innerHTML='Error load for you');
 </script>
-
-</body>
-</html>
