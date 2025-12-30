@@ -5,10 +5,11 @@
 <title>NetShort Streaming</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-body{background:#000;color:#fff;font-family:sans-serif}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;padding:12px}
 .card img{width:100%;border-radius:6px}
 a{text-decoration:none;color:#fff}
+h2{padding:12px;margin:0}
 </style>
 </head>
 <body>
@@ -20,37 +21,31 @@ a{text-decoration:none;color:#fff}
 <div class="grid" id="foryou"></div>
 
 <script>
-const base = window.location.origin;
+const base = location.origin;
 
-// THEATERS
+function render(el, list){
+  if(!list || !list.length){
+    el.innerHTML = '<div>Tidak ada data</div>';
+    return;
+  }
+  list.forEach(d=>{
+    el.innerHTML += `
+      <a class="card" href="episodes.html?id=${d.shortPlayId}">
+        <img src="${d.cover}">
+        <div>${d.title}</div>
+      </a>`;
+  });
+}
+
 fetch(base + '/api/theaters')
 .then(r=>r.json())
-.then(j=>{
-  const list = j.data || j.result || [];
-  list.forEach(d=>{
-    theaters.innerHTML += `
-      <a class="card" href="episodes.html?id=${d.shortPlayId}">
-        <img src="${d.cover}">
-        <div>${d.title}</div>
-      </a>`;
-  });
-})
-.catch(e=>console.error('Theaters error', e));
+.then(j=>render(theaters, j.data || j.result))
+.catch(()=>theaters.innerHTML='Error load theaters');
 
-// FOR YOU
 fetch(base + '/api/foryou')
 .then(r=>r.json())
-.then(j=>{
-  const list = j.data || j.result || [];
-  list.forEach(d=>{
-    foryou.innerHTML += `
-      <a class="card" href="episodes.html?id=${d.shortPlayId}">
-        <img src="${d.cover}">
-        <div>${d.title}</div>
-      </a>`;
-  });
-})
-.catch(e=>console.error('ForYou error', e));
+.then(j=>render(foryou, j.data || j.result))
+.catch(()=>foryou.innerHTML='Error load foryou');
 </script>
 
 </body>
