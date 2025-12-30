@@ -14,7 +14,7 @@
 
 <script>
 function search(){
- fetch('/api/search?q='+encodeURIComponent(q.value))
+ fetch(window.location.origin + '/api/search?q='+encodeURIComponent(q.value))
  .then(r=>r.json())
  .then(j=>{
    res.innerHTML='';
