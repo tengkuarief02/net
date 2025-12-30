@@ -20,7 +20,7 @@ a{text-decoration:none;color:#fff}
 <div class="grid" id="foryou"></div>
 
 <script>
-fetch('/api/theaters').then(r=>r.json()).then(j=>{
+fetch(window.location.origin + '/api/theaters').then(r=>r.json()).then(j=>{
   j.data.forEach(d=>{
     theaters.innerHTML+=`
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
@@ -30,7 +30,7 @@ fetch('/api/theaters').then(r=>r.json()).then(j=>{
   });
 });
 
-fetch('/api/foryou').then(r=>r.json()).then(j=>{
+fetch(window.location.origin + '/api/foryou').then(r=>r.json()).then(j=>{
   j.data.forEach(d=>{
     foryou.innerHTML+=`
       <a class="card" href="episodes.html?id=${d.shortPlayId}">
